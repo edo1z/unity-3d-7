@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-
     private PlayerInput _input;
 
     void Awake()
@@ -25,7 +24,7 @@ public class Player : MonoBehaviour
 
     private void Rotate(InputAction.CallbackContext obj)
     {
-        Debug.Log("Rotate!");
+        transform.Rotate(0, 15f, 0);
     }
 
 }
