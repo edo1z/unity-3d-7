@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
     private void Rotate(InputAction.CallbackContext obj)
     {
         transform.Rotate(0, 15f, 0);
+        float deg = transform.localEulerAngles.y;
+        Debug.Log("deg: " + deg);
     }
 
 }
