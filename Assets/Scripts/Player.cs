@@ -28,7 +28,11 @@ public class Player : MonoBehaviour
     {
         transform.Rotate(0, 15f, 0);
         float deg = transform.localEulerAngles.y;
+        Quaternion q = transform.rotation;
+        float deg3 = q.eulerAngles.y;
+        float deg4 = transform.eulerAngles.y;
         Debug.Log("deg: " + deg);
+        Debug.Log(deg3 + " -- " + deg4);
 
         Vector3 diff = _cube1.transform.position - transform.position;
         float rad = Mathf.Atan2(diff.x, diff.z);
