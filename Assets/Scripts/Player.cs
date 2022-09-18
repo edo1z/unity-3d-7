@@ -10,8 +10,9 @@ public class Player : MonoBehaviour
 
     private PlayerInput _input;
     private GameObject _cube1;
+    private GameObject _cam;
     private CharacterController _characon;
-    private Vector3 _move_direction;
+    private Vector2 _move_direction;
     private float _target_angle = 0f;
     private float _current_velocity = 0f;
 
@@ -20,6 +21,7 @@ public class Player : MonoBehaviour
         TryGetComponent(out _input);
         TryGetComponent(out _characon);
         _cube1 = GameObject.Find("Cube1");
+        _cam = GameObject.Find("Main Camera");
     }
 
     private void OnEnable()
@@ -38,12 +40,7 @@ public class Player : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext obj)
     {
-        Vector2 direction = obj.ReadValue<Vector2>();
-        _move_direction = new Vector3(direction.x, 0f, direction.y).normalized;
-        if (_move_direction != Vector3.zero)
-        {
-            _target_angle = Mathf.Atan2(_move_direction.x, _move_direction.z) * Mathf.Rad2Deg;
-        }
+        _move_direction = obj.ReadValue<Vector2>();
     }
 
     private void OnRotate(InputAction.CallbackContext obj)
@@ -58,9 +55,17 @@ public class Player : MonoBehaviour
     private void Move()
     {
         float current = transform.eulerAngles.y;
-        float deg = Mathf.SmoothDampAngle(current, _target_angle, ref _current_velocity, _smooth_time);
-        transform.rotation = Quaternion.Euler(0, deg, 0);
-        _characon.Move(_move_direction * _speed * Time.deltaTime);
+        if (_move_direction != Vector2.zero)
+        {
+            _target_angle = Mathf.Atan2(_move_direction.x, _move_direction.y) * Mathf.Rad2Deg + _cam.transform.eulerAngles.y;
+        }
+        float angle = Mathf.SmoothDampAngle(current, _target_angle, ref _current_velocity, _smooth_time);
+        transform.rotation = Quaternion.Euler(0, angle, 0);
+        if (_move_direction != Vector2.zero)
+        {
+            Vector3 direction = Quaternion.Euler(0, _target_angle, 0) * Vector3.forward;
+            _characon.Move(direction.normalized * _speed * Time.deltaTime);
+        }
     }
 
     private void Update()
