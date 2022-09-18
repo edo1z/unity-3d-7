@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    private PlayerInput _input;
+
+    void Awake()
     {
-        
+        TryGetComponent(out _input);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        _input.actions["Rotate"].started += Rotate;
     }
+
+    private void OnDisable()
+    {
+        _input.actions["Rotate"].started -= Rotate;
+    }
+
+    private void Rotate(InputAction.CallbackContext obj)
+    {
+        Debug.Log("Rotate!");
+    }
+
 }
