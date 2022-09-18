@@ -5,8 +5,12 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] private float _smooth_time = 0.3f;
+
     private PlayerInput _input;
     private GameObject _cube1;
+    private float _target_angle = 0f;
+    private float _current_velocity = 0f;
 
     void Awake()
     {
@@ -26,19 +30,23 @@ public class Player : MonoBehaviour
 
     private void Rotate(InputAction.CallbackContext obj)
     {
-        transform.Rotate(0, 15f, 0);
-        float deg = transform.localEulerAngles.y;
-        Quaternion q = transform.rotation;
-        float deg3 = q.eulerAngles.y;
-        float deg4 = transform.eulerAngles.y;
-        Debug.Log("deg: " + deg);
-        Debug.Log(deg3 + " -- " + deg4);
+        _target_angle += 90f;
+        if (_target_angle > 360) {
+          _target_angle -= 360f;
+        }
 
         Vector3 diff = _cube1.transform.position - transform.position;
         float rad = Mathf.Atan2(diff.x, diff.z);
         float deg2 = rad * Mathf.Rad2Deg;
         Debug.Log("diff: " + diff);
         Debug.Log("rad: " + rad + " deg2: " + deg2);
+    }
+
+    private void Update()
+    {
+        float current = transform.eulerAngles.y;
+        float deg = Mathf.SmoothDampAngle(current, _target_angle, ref _current_velocity, _smooth_time);
+        transform.rotation = Quaternion.Euler(0, deg, 0);
     }
 
 }
