@@ -38,15 +38,20 @@ public class Player : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext obj)
     {
-      Vector2 direction = obj.ReadValue<Vector2>();
-      _move_direction = new Vector3(direction.x, 0f, direction.y).normalized;
+        Vector2 direction = obj.ReadValue<Vector2>();
+        _move_direction = new Vector3(direction.x, 0f, direction.y).normalized;
+        if (_move_direction != Vector3.zero)
+        {
+            _target_angle = Mathf.Atan2(_move_direction.x, _move_direction.z) * Mathf.Rad2Deg;
+        }
     }
 
     private void OnRotate(InputAction.CallbackContext obj)
     {
         _target_angle += 90f;
-        if (_target_angle > 360) {
-          _target_angle -= 360f;
+        if (_target_angle > 360)
+        {
+            _target_angle -= 360f;
         }
     }
 
@@ -60,7 +65,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-      Move();
+        Move();
     }
 
 }
