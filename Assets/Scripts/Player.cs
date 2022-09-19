@@ -6,20 +6,23 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _smooth_time = 0.3f;
-    [SerializeField] private float _speed = 5f;
+    [SerializeField] private float _walk_speed = 5f;
 
     private PlayerInput _input;
+    private Animator _anim;
     private GameObject _cube1;
     private GameObject _cam;
     private CharacterController _characon;
     private Vector2 _move_direction;
     private float _target_angle = 0f;
     private float _current_velocity = 0f;
+    private bool _is_running = false;
 
-    void Awake()
+    private void Awake()
     {
         TryGetComponent(out _input);
         TryGetComponent(out _characon);
+        TryGetComponent(out _anim);
         _cube1 = GameObject.Find("Cube1");
         _cam = GameObject.Find("Main Camera");
     }
@@ -28,6 +31,8 @@ public class Player : MonoBehaviour
     {
         _input.actions["Move"].performed += OnMove;
         _input.actions["Move"].canceled += OnMove;
+        _input.actions["Run"].started += OnRun;
+        _input.actions["Run"].canceled += OnRun;
         _input.actions["Rotate"].started += OnRotate;
     }
 
@@ -35,12 +40,19 @@ public class Player : MonoBehaviour
     {
         _input.actions["Move"].performed -= OnMove;
         _input.actions["Move"].canceled -= OnMove;
+        _input.actions["Run"].started -= OnRun;
+        _input.actions["Run"].canceled -= OnRun;
         _input.actions["Rotate"].started -= OnRotate;
     }
 
     private void OnMove(InputAction.CallbackContext obj)
     {
         _move_direction = obj.ReadValue<Vector2>();
+    }
+
+    private void OnRun(InputAction.CallbackContext obj)
+    {
+        _is_running = obj.phase == InputActionPhase.Started ? true : false;
     }
 
     private void OnRotate(InputAction.CallbackContext obj)
@@ -61,11 +73,14 @@ public class Player : MonoBehaviour
         }
         float angle = Mathf.SmoothDampAngle(current, _target_angle, ref _current_velocity, _smooth_time);
         transform.rotation = Quaternion.Euler(0, angle, 0);
+        float _speed = 0f;
         if (_move_direction != Vector2.zero)
         {
             Vector3 direction = Quaternion.Euler(0, _target_angle, 0) * Vector3.forward;
+            _speed = _is_running ? _walk_speed * 2 : _walk_speed;
             _characon.Move(direction.normalized * _speed * Time.deltaTime);
         }
+        _anim.SetFloat("speed", _speed);
     }
 
     private void Update()
@@ -74,3 +89,4 @@ public class Player : MonoBehaviour
     }
 
 }
+
